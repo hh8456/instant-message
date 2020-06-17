@@ -1,0 +1,13 @@
+syntax = "proto3";
+
+package msg_struct;
+
+// 走通用更新物品，但又不想接入通用弹窗
+// 编号规则：系统编号+自定义两字符的模块号
+// 例如：球员进阶系统130，进阶失败返还物品01，则模块号13001
+enum UpdateItemListSpecMod {
+	// 通用物品弹窗
+	DefaultUpdateItemList = 0;
+	// 进阶球员失败返还物品
+	FootballerUpgradeFail = 13001;
+}

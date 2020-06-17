@@ -1,0 +1,6 @@
+{
+	"explain1":"msgaddr 是内网地址, wsmsg 需要去连接 msgaddr",
+	"msgaddr":"192.168.10.240:5001",
+	"explain2":"wsmsgaddr 是外网地址, 用来当助记符,表示这个外网 ip 上的 wsmsg 所连接的 msg-server 的内网地址",
+	"wsmsgaddr":"192.168.10.240:23456"
+}

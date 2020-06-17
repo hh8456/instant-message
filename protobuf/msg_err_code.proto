@@ -1,0 +1,440 @@
+
+//定义各种错误提示的编码
+syntax = "proto3";
+
+package msg_err_code;
+
+// 帐号相关0～1000
+// 预留1000～2000
+// 好友相关2000～3000（包括私聊）
+// 群相关3000～4000（包括群聊）
+// 朋友圈相关4000-5000
+
+enum MsgErrCode {
+	// 向服务器发送了错误的数据
+	no_error = 0;
+	
+	// 注册帐号，反序列化 msg_struct.C2SRegisterAccount 失败
+	proto_unmarshal_msg_struct_C2SRegisterAccount_failed = 100;
+	// 注册帐号，帐号非法
+	register_account_account_id_is_zero = 101;
+	// 注册帐号，密码为空
+	register_account_password_is_empty = 102;
+	// 注册帐号，验证码为空
+	register_account_verification_is_empty = 103;	
+	// 注册帐号，验证码错误
+	register_account_verification_is_error = 104;
+	// 注册帐号，帐号已存在
+	register_account_account_is_already_used = 105;
+	// 创建账号时, 插入 mysql 出错
+	register_access_mysql_has_error_when_create_account = 106;
+	
+	// 登录帐号，反序列化 msg_struct.C2SLogin 失败
+	proto_unmarshal_msg_struct_C2SLogin_failed = 110;
+	// 登录帐号，帐号非法
+	login_account_id_is_zero = 111;
+	// 登录帐号，帐号或密码错误
+	login_account_or_pwd_is_wrong = 112;
+	// 登录时,读取 mysql 出错
+	login_access_mysql_has_error_when_load_account = 113;
+	// 登录时，帐号已停用
+	login_account_is_out_of_service = 114;
+
+	// 客户端上传推送、厂商，反序列化msg_struct.C2SDeviceInfo失败
+	proto_unmarshal_msg_struct_C2SDeviceInfo_has_error = 120;
+	// 客户端上传推送、厂商，推送ID为空
+	device_info_device_info_is_empty = 121;
+	// 客户端上传推送、厂商，厂商为空
+	device_info_device_producter_is_empty = 122;
+	// 客户端上传推送、厂商，序列化 msg_struct.DeviceInfo 出错
+	device_info_device_proto_marshal_msg_struct_DeviceInfo_has_error = 123;
+	// 客户端上传推送、厂商，用户-设备号存入redis失败
+	device_info_account_device_info_save_into_redis_failed = 124;
+	// 客户端上传推送、厂商，设备号-用户存入redis失败
+	device_info_device_info_account_save_into_redis_failed = 125;
+	// 客户端上传推送、厂商，存入数据库失败
+	device_info_save_into_mysql_failed = 126;
+
+	// 客户端设置用户名，反序列化 msg_struct.C2SSetUserName 失败
+	proto_unmarshal_set_user_name_has_error = 130;
+	// 客户端设置用户名，用户名为空
+	set_user_name_user_name_is_set = 131;
+	// 客户端设置用户名，用户名不合法
+	set_user_name_user_name_is_illegal = 132;
+	// 客户端设置用户名，已设置过用户名，不允许修改
+	set_user_name_user_name_has_been_set = 133;
+	// 客户端设置用户名，用户名已存在
+	set_user_name_user_name_is_exist = 134;
+	// 客户端设置用户名，存入 redis 失败
+	set_user_name_save_into_redis_failed = 135;
+	// 客户端设置用户名，存入数据库失败
+	set_user_name_save_into_mysql_failed = 136;
+
+	// 查找用户，反序列化msg_struct.C2SFindUser失败
+	proto_unmarshal_find_user_has_error = 140;
+	// 查找用户，关键字为空
+	find_user_key_is_empty = 141;
+	// 查找用户，未找到用户
+	find_user_user_is_not_exist = 142;
+
+	// 设置头像，反序列化 msg_struct.C2SSetHeadPortrait 失败
+	proto_unmarshal_set_head_portrait_has_error = 150;
+	// 设置头像，头像地址为空
+	set_head_portrait_head_portrait_url_is_empty = 151;
+	// 设置头像，存入 redis 出错
+	set_head_save_head_portrait_url_into_redis_failed = 152;
+	// 设置头像，存入数据库出错
+	set_head_save_head_portrait_url_into_mysql_failed = 153;
+	
+	// 修改密码，反序列化 msg_struct.C2SChangePassword 失败
+	proto_unmarshal_msg_struct_C2SChangePassword_has_error = 160;
+	// 修改密码，新密码为空
+	change_password_new_password_is_empty = 161;
+	// 修改密码，存入数据库出错
+	change_password_save_into_mysql_error = 162;
+
+	// 反序列化 msg_struct.C2SAddFriend 失败
+	proto_unmarshal_msg_struct_C2SAddFriend_has_error = 2000;
+	// 添加好友时，参数错误
+	add_friend_param_error = 2001;
+	// 添加好友：好友申请写入mysql出错
+	add_friend_mysql_has_error_when_write = 2002;
+	// 添加好友：发送者和接收者已经是好友关系
+	add_friend_sender_and_recevier_are_friends = 2003;
+	
+	// 反序列化 msg_struct.C2SAgreeBecomeFriend 失败
+	proto_unmarshal_msg_struct_C2SAgreeBecomeFriend_has_error = 2010;
+	// 同意添加好友：好友通过申请写入mysql出错
+	agree_become_friend_mysql_has_error_when_write = 2011;
+	// 同意添加好友：发送者和接收者已经是好友关系
+	agree_become_friend_sender_and_receiver_are_friends = 2012;
+	// 同意添加好友：在 friend_req 表中没有找到相关记录, 驳回请求
+	agree_become_friend_mysql_table_friend_req_has_no_record = 2013;
+	// 同意添加好友：读取 friend_req 表时发生错误
+	agree_become_friend_mysql_table_friend_req_has_read_error = 2014;
+	// 同意添加好友：不能和自己当好友
+	agree_become_friend_can_not_be_friend_with_self = 2015;
+	
+	// 反序列化 msg_struct.C2SDeleteFriend失败
+	proto_unmarshal_msg_struct_C2SDeleteFriend_has_error = 2020;
+	// 不是好友
+	delete_friend_is_not_friend = 2021;
+	// 服务器内部错误
+	delete_friend_server_internal_error = 2022;
+
+	// 反序列化 msg_struct.C2SConfirmDeleteFriend失败
+	proto_unmarshal_msg_struct_C2SConfirmDeleteFriend_has_error = 2030;
+	// 不是好友
+	confirm_friend_is_not_friend = 2031;
+	// 服务器内部错误
+	confirm_friend_server_internal_error = 2032;
+
+	// 发送私聊消息时，反序列化 msg_struct.C2SPrivateChat失败
+	proto_unmarsharl_msg_struct_C2SPrivateChat_has_error = 2040;
+	// 发送私聊消息时，接收者不合法
+	private_chat_receiver_illegal = 2041;
+	// 发送私聊消息时，接受者不是发送者的好友
+	private_chat_receiver_is_not_friend = 2042;
+	// 发送私聊消息时，发送消息类型非法
+	private_chat_receiver_type_illegal = 2043;
+	// 发送私聊消息时，消息类型与对应结构不符（例如，消息类型为voice，但voiceMessage结构体为空）
+	private_chat_message_type_not_match_message = 2044;
+	// 发送私聊消息时，语音url为空
+	private_chat_voice_url_is_empty = 2045;
+	// 发送私聊消息时，语音过长
+	private_chat_voice_too_long = 2046;
+	// 发送私聊消息时，文件url为空
+	private_chat_file_url_is_empty = 2047;
+	// 发送私聊消息时，文件缩略图为空
+	private_chat_file_thumbnail_url_is_empty = 2048;
+	// 发送私聊消息时，视频url为空
+	private_chat_video_url_is_empty = 2049;
+	// 发送私聊消息时，视频缩略图url为空
+	private_chat_video_thumbnail_url_is_empty = 2050;
+	// 发送私聊消息时，cardMessage 为空
+	private_chat_card_message_is_empty = 2051;
+	
+	// 用户撤回私聊消息时，反序列化 msg_struct.C2SWithdrawMessage 失败
+	proto_unmarshal_msg_struct_C2SWithdrawMessage_has_error = 2060;
+	// 用户撤回私聊消息时，私聊消息撤回失败,可能因为已经超过 5 分钟
+	withDraw_message_private_chat_withdraw_fail = 2061;
+	// 用户撤回私聊消息时，撤回者不是发送者
+	withDraw_message_withDrawer_is_not_sender = 2062;
+	
+	// 设置好友备注名，反序列化 msg_struct.C2SSetFriendRemarkName
+	proto_unmarshal_msg_struct_C2SSetFriendRemarkName_has_error = 2070;
+	// 设置好友备注名，两者不是好友关系
+	set_friend_remark_name_is_not_friend = 2071;
+	// 设置好友备注名，备注名为空
+	set_friend_remark_name_remark_name_is_empty = 2072;
+	
+	// 发送环信推送，反序列化 msg_struct.C2SHuanXinPush 失败
+	proto_unmarshal_msg_struct_C2SHuanXinPush_has_error = 2080;
+	// 发送环信推送，对方不是你的好友
+	huan_xin_push_is_not_your_friend = 2081;
+	// 发送环信推送，你不是对方的好友
+	huan_xin_push_you_are_not_his_friend = 2082;
+	// 发送环信推送，获取对方推送消息失败
+	huan_xin_push_get_friend_push_info_failed = 2083;
+	// 发送环信推送，对方是IOS，不是安卓
+	huan_xin_push_is_not_android = 2084;
+	
+	// 获取短信验证码，反序列化 msg_struct.C2SGetVerificationCode 失败
+	proto_unmarshal_get_verification_code_has_error = 2090;
+	// 获取短信验证码，手机号错误
+	get_verification_code_phone_num_error = 2091;
+	// 获取短信验证码，用途不明
+	get_verification_code_action_has_error = 2092;
+	// 获取短信验证码，（注册时)，时间未超时
+	get_verification_code_register_not_timeout = 2093;
+	// 获取短信验证码，（注册时)，帐号已存在
+	get_verification_code_register_account_exist = 2094;
+	// 获取短信验证码，（忘记密码时)，账户不存在
+	get_verification_code_forget_password_account_is_not_exist = 2095;
+	// 获取短信验证码，（忘记密码时)，时间未超时
+	get_verification_code_forget_password_not_timeout = 2096;
+	// 获取短信验证码，服务器内部错误
+	get_verification_code_server_internal_error = 2099;
+	
+	// 忘记密码时，反序列化 msg_struct.C2SForgetPassword 失败
+	proto_unmarshal_forget_password_has_error = 2100;
+	// 忘记密码时，帐号为空
+	forget_password_phone_num_is_empty = 2101;
+	// 忘记密码时，验证码为空
+	forget_password_verification_code_is_empty = 2102;
+	// 忘记密码时，密码为空
+	forget_password_password_is_empty = 2103;
+	// 忘记密码时，验证码错误
+	forget_password_verification_code_error = 2104;
+	// 忘记密码时，服务器内部错误
+	forget_password_server_internal_error = 2109;
+
+	// 建立聊天群失败，反序列化msg_struct.C2SCreateChatGroup失败
+	proto_unmarshal_msg_struct_C2SCreateChatGroup_has_error = 3000;
+	// 建立聊天群失败，被邀请者不是邀请者的好友
+	create_chat_group_invitee_and_inviter_is_not_friend = 3001;
+	// 建立聊天群失败, 原因是往表 chat_group 插入记录失败
+	create_chat_group_insert_chat_group_fail = 3002;
+	// 建立聊天群失败, 更新表 chat_group.chat_group_id 字段 失败
+	create_chat_group_update_chat_group_uid_fail = 3003;
+	// 建立聊天群失败,往 chat_group_create_log 插入记录失败
+	create_chat_group_insert_chat_group_create_log_fail = 3004;
+	// 建立聊天群失败,往 chat_group_member 插入记录失败
+	create_chat_group_insert_chat_group_member_fail = 3005;
+	// 建立聊天群失败,提交事务时发送错误
+	create_chat_group_commit_error_when_create_group = 3006;
+	// 建立聊天群失败，序列化群主信息失败
+	create_chat_group_marshal_chat_group_owner_failed = 3007;
+	// 建立聊天群失败，群主获取好友的简略信息失败
+	create_chat_group_get_friend_brief_info_failed = 3008;
+
+	// 反序列化 msg_struct.C2SReqJoinChatGroup失败
+	proto_unmarshal_msg_struct_C2SReqJoinChatGroup_has_error = 3020;
+	// 群ID错误
+	send_req_join_chat_group_group_id_error = 3021;
+	// 用户已经是群成员
+	send_req_join_chat_group_is_group_member = 3022;
+	// 通过用户上传的群ID，查询群主失败
+	send_req_join_chat_group_query_group_manager_failed = 3023;
+	// 通知群主失败
+	mq_group_manager_req_join_chat_group_failed = 3024;
+	// 服务器禁止短时间内建立多个群,所以建群失败
+	ban_on_create_chat_group_in_short_time = 3025;
+
+	// 反序列化 msg_struct.C2SAgreeSomeOneReqJoinChatGroup失败
+	proto_unmarshal_msg_struct_C2SAgreeSomeOneReqJoinChatGroup_has_error = 3030;
+	// 查询群ID失败
+	send_agree_some_one_req_join_chat_group_query_group_id_failed = 3031;
+	// 发送者不是群主
+	send_agree_some_one_req_join_chat_group_sender_is_not_manager = 3032;
+	// 未查询到申请加群记录
+	send_agree_some_one_req_join_chat_group_query_reques_uid_failed = 3033;
+	// 插入群成员列表失败
+	send_agree_some_one_req_join_chat_group_insert_chat_group_member_failed = 3034;
+	// 标识处理此消息失败
+	send_agree_some_one_req_join_chat_group_update_chat_group_req_join_log_failed = 3035;
+	// 通知申请者，发送到 MQ 失败
+	send_agree_some_one_req_join_chat_group_notice_requester_failed = 3036;
+	// 获取群成员失败
+	send_agree_some_one_req_join_chat_group_get_members_failed = 3037;
+
+	// 反序列化 msg_struct.C2SRefuseSomeOneReqJoinChatGroup失败
+	proto_unmarshal_msg_struct_C2SRefuseSomeOneReqJoinChatGroup_has_error = 3040;
+	// C2SRefuseSomeOneReqJoinChatGroup消息值错误
+	send_refuse_req_some_one_req_join_chat_group_error = 3041;
+	// 标识处理此消息失败
+	send_refuse_some_one_req_join_chat_group_update_chat_group_req_join_log_failed = 3042;
+
+	// 反序列化 msg_struct.C2SChatGroupInfo失败
+	proto_unmarshal_msg_struct_C2SChatGroupInfo_has_error = 3050;
+	// C2SChatGroupInfo消息值错误
+	send_chat_group_info_group_id_error = 3051;
+	// 获取群信息失败
+	send_chat_group_info_get_group_info_failed = 3052;
+	// 获取群成员列表失败
+	send_chat_group_info_get_group_member_failed = 3053;
+
+	// 反序列化 msg_struct.C2SInviteJoinChatGroup失败
+	proto_unmarshal_msg_struct_C2SInviteJoinChatGroup_has_error = 3060;
+	// 群ID错误
+	send_invite_join_chat_group_group_id_error = 3061;
+	// 被邀请者ID错误
+	send_invite_join_chat_group_invitee_id_error = 3062;
+	// 被邀请者与邀请者不是好友关系
+	send_invite_join_chat_group_is_not_friend_error = 3063;
+	// 被邀请者已经进群
+	send_invite_join_chat_group_has_joined_chat_group_error = 3064;
+	// 被邀请者添加到chat_group_member失败
+	send_invite_join_chat_group_insert_chat_group_member_failed = 3065;
+	// 获取群成员列表失败
+	send_invite_join_chat_group_get_chat_group_member_failed = 3066;
+
+	// 反序列化 msg_struct.C2SCancelChatGroup失败
+	proto_unmarshal_msg_struct_C2SCancelChatGroup_has_error = 3070;
+	// 群ID错误
+	send_cancel_chat_group_group_id_error = 3071;
+	// 用户不是群成员
+	send_cancel_chat_group_is_not_member = 3072;
+	// 用户是群主
+	send_cancel_chat_group_is_creator = 3073;
+
+	// 反序列化 msg_struct.C2SUnChatGroup失败
+	proto_unmarshal_msg_struct_C2SUnChatGroup_has_error = 3080;
+	// 群ID错误
+	send_un_chat_group_group_id_error = 3081;
+	// 用户不是群主
+	send_un_chat_group_is_not_creator = 3082;
+	// 获取群成员列表失败
+	send_un_chat_group_get_members_failed = 3083;
+
+	// 反序列化 msg_struct.C2SChatGroupKick失败
+	proto_unmarshal_msg_struct_C2SChatGroupKick_has_error = 3090;
+	// 群ID错误
+	send_chat_group_kick_group_id_error = 3091;
+	// 用户不是群主
+	send_chat_group_kick_is_not_creator = 3092;
+	// 用户不是群成员
+	send_chat_group_user_is_not_member = 3093;
+	// 获取群成员列表失败
+	send_chat_group_kick_get_members_failed = 3094;
+
+	// 反序列化 msg_struct.C2SChatGroupList失败
+	proto_unmarshal_msg_struct_C2SChatGroupList_has_error = 3100;
+	// 读取用户群列表失败
+	send_chat_group_list_get_chat_group_list_failed = 3101;
+
+	// 反序列化 msg_struct.C2SGetOfflineGroupChatMsg失败
+	proto_unmarshal_msg_struct_C2SGetOfflineGroupChatMsg_has_error = 3110;
+	// 群id不合法
+	send_get_offline_group_chat_msg_group_id_illegal = 3111;
+	// 服务器从redis读取群离线消息失败
+	send_get_offlien_group_chat_msg_get_offline_msg_failed = 3112;
+	
+	// 用户撤回群聊消息，反序列化 msg_struct.C2SWithdrawGroupMessage 失败
+	proto_unmarshal_msg_struct_C2SWithdrawGroupMessage_has_error = 3120;
+	// 用户撤回群聊消息，群聊消息撤回失败,可能因为已经超过 5 分钟
+	withDraw_group_message_group_chat_withdraw_fail = 3121;
+	// 用户撤回私聊消息时，撤回者不是发送者
+	withDraw_group_message_withDrawer_is_not_sender = 3122;
+	
+		
+	// 发送群聊消息时，反序列化 msg_struct.C2SGroupChat失败
+	proto_unmarshal_msg_struct_C2SGroupChat_has_error = 3130;
+	// 发送群聊消息时，群消息 ChatMsg为空
+	send_group_chat_msg_chat_msg_is_nil = 3131;
+	// 发送群聊消息时，消息结构不合法
+	send_group_chat_msg_chat_msg_is_illege = 3132;
+	// 发送群聊消息时，发送者不是群成员
+	send_group_chat_sender_is_not_chat_group_member = 3133;
+	// 发送群聊消息时，序列化群消息失败
+	proto_marshal_msg_struct_GroupMessage_has_error = 3134;
+	// 发送群聊消息时，消息存入redis失败
+	send_group_chat_msg_chat_msg_store_redis_failed = 3135;
+	// 发送群聊消息时，获取群成员失败
+	send_group_chat_msg_get_group_member_failed = 3136;
+	// 发送群聊消息时，消息类型与对应结构不符（例如，消息类型为voice，但voiceMessage结构体为空）
+	send_group_chat_msg_type_not_match_message = 3137;
+	// 发送群聊消息时，语音url为空
+	send_group_chat_msg_voice_url_is_empty = 3138;
+	// 发送群聊消息时，语音过长
+	send_group_chat_msg_voice_too_long = 3139;
+	// 发送私聊消息时，文件url为空
+	send_group_chat_msg_file_url_is_empty = 3140;
+	// 发送私聊消息时，文件缩略图为空
+	send_group_chat_msg_file_thumbnail_url_is_empty = 3141;
+	// 发送私聊消息时，视频url为空
+	send_group_chat_msg_video_url_is_empty = 3142;
+	// 发送私聊消息时，视频缩略图url为空
+	send_group_chat_msg_video_thumbnail_url_is_empty = 3143;
+
+	// 设置朋友圈相册封面，反序列化 msg_struct.C2SSetWeiboCover 失败
+	proto_unmarshal_msg_struct_C2SSetWeiboCover_has_error = 4000;
+	// 设置朋友圈相册封面，朋友圈相册封面图片url地址为空
+	set_weibo_cover_cover_picture_is_empty = 4001;
+	// 设置朋友圈相册封面，服务器内部错误
+	set_weibo_cover_server_internal_error = 4002;
+
+	// 发朋友圈，反序列化 msg_struct.C2SPublishWeibo失败
+	proto_unmarshal_msg_struct_C2SPublishWeibo_has_error = 4010;
+	// 发朋友圈，朋友圈内容不合法
+	publish_weibo_content_is_illegal = 4011;
+	// 发朋友圈，朋友圈类型与内容不匹配
+	publish_weibo_content_do_not_match_type = 4012;
+	// 发朋友圈，朋友圈文字超出限制
+	publish_weibo_text_out_of_limit = 4013;
+	// 发朋友圈，朋友圈内容不只是文字，但url链接为空
+	publish_weibo_url_is_empty = 4014;
+	// 发朋友圈，url链接个数超出限制
+	publish_weibo_url_out_of_limit = 4015;
+	// 发朋友圈，服务器内部错误
+	publish_weibo_server_internal_error = 4016;
+
+	// 点赞朋友圈，反序列化 msg_struct.C2SLickWeibo 失败
+	proto_unmarshal_msg_struct_C2SLickWeibo_has_error = 4020;
+	// 点赞朋友圈，朋友圈id错误（朋友圈不是自己发的，或者不存在，或者朋友圈已被删除）
+	like_weibo_weibo_id_is_error = 4021;
+	// 点赞朋友圈，发朋友圈的人，与点赞者不是好友
+	like_weibo_weibo_liker_publisher_is_not_friend = 4022;
+	// 点赞朋友圈，服务器内部错误
+	like_weibo_server_internal_error = 4024;
+	
+	// 取消点赞朋友圈，反序列化 msg_struct.C2SCancelLikeWeibo 失败
+	proto_unmarshal_msg_struct_C2SCancelLikeWeibo_has_error = 4030;
+	// 取消点赞朋友圈，朋友圈id错误（朋友圈不是自己发的，或者不存在，或者朋友圈已被删除）
+	cancel_like_weibo_weibo_id_is_error = 4031;
+	// 取消点赞朋友圈，服务器内部错误
+	cancel_like_weibo_server_internal_error = 4032;
+
+	// 评论朋友圈，反序列化 msg_struct.C2SReplyWeibo 失败
+	proto_unmarshal_msg_struct_C2SReplyWeibo_has_error = 4040;
+	// 评论朋友圈，朋友圈id错误（朋友圈不是自己发的，或者不存在，或者朋友圈已被删除）
+	reply_weibo_weibo_id_is_error = 4041;
+	// 评论朋友圈，被评论者（可能是发朋友圈的人，也可能是评论朋友圈的人），与评论者不是好友
+	reply_weibo_commentor_is_not_becommentor_friend = 4042;
+	// 评论朋友圈，评论内容过长
+	reply_weibo_comment_content_is_too_long = 4043;
+	// 评论朋友圈，服务器内部错误
+	reply_weibo_server_internal_error = 4044;
+	
+	// 删除朋友圈评论，反序列化 msg_struct.C2SDeleteWeiboReply 失败
+	proto_unmarshal_msg_struct_C2SDeleteWeiboReply_has_error = 4050;
+	// 删除朋友圈评论，朋友圈id错误（朋友圈不是自己发的，或者不存在，或者朋友圈已被删除）
+	delete_weibo_reply_weibo_id_is_error = 4051;
+	// 删除朋友圈评论，评论id错误
+	delete_weibo_reply_comment_id_is_error = 4052;
+	// 删除朋友圈评论，服务器内部错误
+	delete_weibo_reply_server_internal_error = 4053;
+	
+	// 查看自己朋友圈, 反序列化 msg_struct.C2SBrowseOwnWeibo 失败
+	proto_unmarshal_msg_struct_C2SBrowseOwnWeibo_has_error = 4070;
+	// 查看自己朋友圈, 服务器内部错误
+	browse_own_weibo_server_internal_error = 4071;
+	
+	
+	// 删除朋友圈，反序列化 msg_struct.C2SDeleteWeibo 失败
+	proto_unmarshal_msg_struct_C2SDeleteWeibo_has_error = 4080;
+	// 删除朋友圈，朋友圈id错误（朋友圈不是自己发的，或者不存在，或者朋友圈已被删除）
+	delete_weibo_weibo_id_is_error = 4081;
+	// 删除朋友圈，服务器内部错误
+	delete_weibo_server_internal_error = 4082;
+}

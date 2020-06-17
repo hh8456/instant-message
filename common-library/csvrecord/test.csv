@@ -1,0 +1,6 @@
+#第一行为注释行，第二行为类型行，第三行为字段名行						一维数组																
+int	string	string	float	int	string	array1	bool	int	int	int	int	int	int	 int	int	int	int	int	string	string	array1	array1
+id	name	email	height	ext1	ext2	keys	ishome	i8	i16	i32	i64	uint	ui8	ui16	ui32	ui64	float32	float64	person	ptrperson	persons	ptrpersons
+1001	John Done	jode@a.com	1.81	1	hello1	1,3,5,7,9	TRUE	2	4	6	8	10	12	14	16	18	20	22	Hello:me	Hello:me	Hello:me,hello:you,kill:me	Hello:me,hello:you,kill:me
+1002	test1	test1@a.com	1.83	2	hello2	2,4,6,8,10	0	2	4	6	8	10	12	14	16	18	20	22	Hello:you	Hello:you	Hello:me,hello:you,kill:me	Hello:me,hello:you,kill:me
+1003	test2	test2@ab.com	1.82	3	hello3	1,8,3	1	2	4	6	8	10	12	14	16	18	20	22	Kill:me	Kill:me	Hello:me,hello:you,kill:me	Hello:me,hello:you,kill:me

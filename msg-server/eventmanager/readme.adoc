@@ -1,0 +1,7 @@
+eventmananger is a threads-safe event notify module.
+
+It can be invoked concurrently with
+`eventmanager.Instence().Subscribe()`/`eventmanager.Instance().Unsubscibe`/
+`eventmanager.Instence().Publish()`
+
+**note: for more infomation please refer to `eventmanager_test.go`**

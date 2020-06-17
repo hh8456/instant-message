@@ -1,0 +1,369 @@
+syntax = "proto3";
+
+package msg_id;
+
+
+// 警告， c2s_create_character， c2s_login 这三对协议的值不可改变，新增协议值不能小于 65541，否则程序会出问题
+enum NetMsgId {
+	msg_star_id = 0;
+
+	// 客户端 和 LOGIN 的通信协议号大于 6000
+
+	// 获取 GATE 地址
+	C2l_gate_addr = 60000;
+	L2c_gate_addr = 60001;
+
+	// 错误码通知
+	S2CErrorCode = 60002;
+
+	// 客户端 和 GATE 服务端的通信协议号大于 65535
+
+	C2SRegisterAccount = 65536;
+	S2CRegisterAccount = 65537;
+	
+	//登录
+	C2SLogin = 65538;
+	S2CLogin = 65539;
+
+	//创建角色
+	C2SCreateCharacter = 65540;
+	S2CCreateCharacter = 65541;
+
+	//客户端主动退出
+	C2SLogout = 65542;
+	S2CLogout = 65543;
+
+	// 客户端发送心跳包
+	C2SHeartbeat = 65544;
+	S2CHeartbeat = 65545;
+
+	// 服务器把客户端踢下线
+	S2CKick = 65546;
+	S2CRepeatLogin = 65547;
+
+	// 改名
+	C2SRename = 65548;
+	S2CRename  = 65549;
+
+	// 客户端上传硬件信息
+	C2SDeviceInfo = 65550;
+	S2CDeviceInfo = 65551;
+
+	// 用户名
+	C2SSetUserName = 65552;
+	S2CSetUserName = 65553;
+
+	// 头像
+	C2SSetHeadPortrait = 65554;
+	S2CSetHeadPortrait = 65555;
+	
+	// 修改密码
+	C2SChangePassword = 65556;
+	S2CChangePassword = 65557;
+	
+	// 忘记密码
+	C2SForgetPassword = 65558;
+	S2CForgetPassword = 65559;
+	
+	// 获取短信验证码
+	C2SGetVerificationCode = 65560;
+	S2CGetVerificationCode = 65561;
+	
+	// 用户名、密码登录
+	C2SUsernameLogin = 65562;
+	S2CUsernameLogin = 65563;
+
+	// === 上面是基础逻辑协议
+	
+	// 客户端把收到的最后一条消息的时间戳上报给服务器
+	C2SLastMsgTimeStamp = 65600;
+	// 服务器把玩家最后一条消息的时间戳告诉客户端
+	//S2CLastMsgTimeStamp = 65601;
+
+	// 客户端向服务端获取历史聊天记录
+	C2SGetChatRecords = 65602;
+	S2CGetChatRecords = 65603;
+
+	// 发送私聊信息
+	C2SPrivateChat = 65604;
+	MQPrivateChat = 65607;
+	S2CPrivateChat = 65605;
+
+	// B 收到 A 的消息
+	S2CRecvPrivateChat = 65606;
+	// 收到"我"在其他终端上发出的消息
+	// 比如 a  登录了 APP 和 WEB 端的 IM, 在 APP 上发给别人的私聊消息, WEB 上也能看到
+	S2COtherTerminalPrivateChat = 65613;
+
+	// 用户登录后, 向服务端发送收到的最后一条聊天记录的时间戳,用来查询离线消息
+	C2SGetOfflinePrivateChatMsg = 65608;
+	S2CGetOfflinePrivateChatMsg = 65609;
+
+	// 即将发送图片给服务器
+	C2SPicWillBeSend = 65610;
+	S2CPicWillBeSend = 65611;
+	
+	// 账号在其他地方登录
+	S2CLoginSomewhereElse = 65612;
+
+	// A 撤回已经发送的消息
+	C2SWithdrawMessage = 65614;
+	S2CWithdrawMessage = 65616;
+	
+	// 加好友
+	C2SAddFriend = 65650;
+	MQAddFriend = 65651;
+	S2CAddFriend = 65652;
+	S2CRecvAddFriend = 65653;
+
+	// 同意成为好友
+	C2SAgreeBecomeFriend = 65660;
+	MQAgreeBecomeFriend = 65661;
+	S2CAgreeBecomeFriend = 65662;
+	S2CRecvAgreeBecomeFriend = 65663;
+	// 比如 a 登录了 APP 和 WEB 端的 IM, 在 APP 上同意别人的好友请求, WEB 上也能看到和别人成为好友
+	S2COtherTerminalAgreeBecomeFriend = 65664;
+
+	// 登录后, 请求
+	// 标记一条好友请求已读
+	C2SReadFriendReq = 65670;
+	S2CReadFriendReq = 65672;
+
+	// 删除好友
+	C2SDeleteFriend = 65680;
+	MQDeleteFriend = 65681;
+	S2CDeleteFriend = 65682;	
+	S2CRecvDeleteFriend = 65683;
+
+	// 被删除的好友，确认被删除消息
+	C2SConfirmDeleteFriend = 65690;
+	S2CConfirmDeleteFriend = 65691;
+
+	// 建立群聊
+	C2SCreateChatGroup = 65700;
+	MQCreateChatGroup = 65701;
+	S2CCreateChatGroup = 65702;
+	S2CRecvCreateChatGroup = 65703;
+
+	// 用户主动加入聊天群
+	C2SReqJoinChatGroup = 65710;
+	S2CRecvReqJoinChatGroup = 65711;
+	MQReqJoinChatGroup = 65712;
+	S2CSomeOneReqJoinChatGroup = 65713;
+	
+	// 群主同意用户加群
+	C2SAgreeSomeOneReqJoinChatGroup = 65720;
+	MQAgreeSomeOneReqJoinChatGroup = 65721;
+	MQManagerAgreeSomeOneReqJoinChatGroup = 65722;
+	S2CManagerAgreeSomeOneReqJoinChatGroup = 65723;
+	S2CManagerAgreeJoinChatGroup = 65724;
+	S2CRecvManagerAgreeSomeOneReqJoinChatGroup = 65725;
+
+	// 群主拒绝用户加群
+	C2SRefuseSomeOneReqJoinChatGroup = 65730;
+	MQRefuseSomeOneReqJoinChatGroup = 65731;
+	S2CManagerRefuseJoinChatGroup = 65732;
+	
+	// 拉取群成员列表
+	C2SChatGroupInfo = 65740;
+	S2CChatGroupInfo = 65741;
+
+	// 群成员邀请好友进群
+	C2SInviteJoinChatGroup = 65750;
+	MQInviteJoinChatGroup = 65751;
+	S2CInviteYouJoinChatGroup = 65752;
+	S2CRecvInviteJoinChatGroup = 65753;
+
+	// 群成员退群 
+	C2SCancelChatGroup = 65760;
+	MQCancelChatGroup = 65761;
+	S2CSomeOneCancelChatGroup = 65762;
+	S2CRecvCancelChatGroup = 65763;
+
+	// 群主解散群
+	C2SUnChatGroup = 65770;
+	MQUnChatGroup = 65771;
+	S2CUnChatGroup = 65772;
+	S2CRecvUnChatGroup = 65773;
+
+	// 群主踢人
+	C2SChatGroupKick = 65780;
+	MQChatGroupKick = 65781;
+	S2CManagerKickSomeOne = 65782;
+	S2CKickedByChatGroupManager = 65783;
+	S2CRecvChatGroupKick = 65784;
+
+	// 用户获取群列表
+	C2SChatGroupList = 65790;
+	S2CChatGroupList = 65791;	
+	
+	// 发送群聊信息
+	C2SGroupChat = 65800;
+	S2CGroupChat = 65801;
+	MQGroupChat = 65802;
+	S2CRecvGroupChat = 65803;
+	C2SChatGroupLastMsgTimeStamp = 65804;
+
+	// 获取群聊离线消息
+	C2SGetOfflineGroupChatMsg = 65810;
+	S2CGetOfflineGroupChatMsg = 65811;
+	
+	// 撤回群聊消息
+	C2SWithdrawGroupMessage = 65820;
+	S2CWithdrawGroupMessage = 65822;
+
+	// 查找用户
+	C2SFindUser = 66000;
+	S2CFindUser = 66001;
+
+	// 用户好友拉黑名单
+	C2SAddFriendBlackList = 66010;
+	S2CAddFriendBlackList = 66011;
+
+	// 用户好友移出黑名单
+	C2SMoveOutFriendBlackList = 66020;
+	S2CMoveOutFriendBlackList = 66021;
+
+	// 用户获取黑名单列表
+	C2SGetFriendBlackList = 66030;
+	S2CGetFriendBlackList = 66031;
+
+	// 设置朋友圈相册封面
+	C2SSetWeiboCover = 67000;
+	S2CSetWeiboCover = 67001;
+
+	// 点赞朋友圈相册封面
+	C2SLikeFriendWeiboCover = 67010;
+	S2CLikeFriendWeiboCover = 67011;
+	
+	// 获取某人朋友圈相册封面（可以包括自己)
+	C2SGetWeiboCover = 67012;
+	S2CGetWeiboCover = 67013;
+
+	// 发朋友圈
+	C2SPublishWeibo = 67020;
+	MQPublishWeibo = 67021;
+	S2CPublishWeibo = 67022;
+	S2CRecvPublishWeibo = 67023;
+
+	// 点赞朋友圈
+	C2SLikeWeibo = 67030;
+	MQLikeWeibo = 67031;
+	S2CLikeWeibo = 67032;
+	S2CRecvLikeWeibo = 67033;
+
+	// 取消点赞朋友圈
+	C2SCancelLikeWeibo = 67040;
+	S2CCancelLikeWeibo = 67041;
+
+	// 评论朋友圈
+	C2SReplyWeibo = 67050;
+	MQReplyWeibo = 67051;
+	S2CReplyWeibo = 67052;
+	S2CRecvReplyWeibo = 67053;
+
+	// 朋友圈删除评论
+	C2SDeleteReplyWeibo = 67060;
+	S2CDeleteReplyWeibo = 67061;
+
+	// 删除朋友圈
+	C2SDeleteWeibo = 67070;
+	MQDeleteWeibo = 67071;
+	S2CDeleteWeibo = 67072;
+	S2CRecvDeleteWeibo = 67073;
+
+	// 浏览某人朋友圈
+	C2SBrowseSomeoneWeibo = 67080;
+	S2CBrowseSomeoneWeibo = 67081;
+	
+	// 浏览所有朋友圈
+	C2SBrowseAllWeibo = 67100;
+	S2CBrowseAllWeibo = 67101;
+
+	// 设置不看某好友朋友圈开关
+	C2SDontLookFriendWeibo = 67110;
+	S2CDontLookFriendWeibo = 67111;
+
+	// 设置不允许某好友看自己朋友圈开关
+	C2SForbiddenFriendLookWeibo = 67120;
+	S2CForbiddenFriendLookWeibo = 67121;
+
+	// 设置是否允许陌生人查看自己的10条朋友圈
+	C2SAllowStrangerLookWeibo = 67130;
+	S2CAllowStrangerLookWeibo = 67131;
+
+	// 设置允许朋友查看自己朋友圈的范围
+	C2SFriendLookWeiboStrategy = 67140;
+	S2CFriendLookWeiboStrategy = 67141;
+	
+	// 获取不看好友朋友圈的好友列表
+	C2SGetDontLookFriendWeiboList = 67150;
+	S2CGetDontLookFriendWeiboList = 67151;
+	
+	// 获取禁止好友看我朋友圈的好友列表
+	C2SGetForbiddenFriendLookWeiboList = 67160;
+	S2CGetForbiddenFriendLookWeiboList = 67161;
+	
+	// 获取是否允许陌生人查看朋友圈开关
+	C2SIsAllowStrangerLookWeibo = 67170;
+	S2CIsAllowStrangerLookWeibo = 67171;	
+	
+	// 获取允许好友查看朋友圈时间范围
+	C2SGetFriendLookWeiboStrategy = 67180;
+	S2CGetFriendLookWeiboStrategy = 67181;
+	
+	// 设置好友备注名
+	C2SSetFriendRemarkName = 67132;
+	S2CSetFriendRemarkName = 67133;
+	
+	// 发送环信推送
+	C2SHuanXinPush = 70000;
+	S2CHuanXinPush = 70001;
+	
+	// 第三方平台帐号登录
+	C2SThirdPlatformAccountLogin = 80000;
+	S2CThirdPlatformAccountLogin = 80001;
+}
+
+// 发朋友圈，朋友圈内容包含类型
+enum MsgWeibo{
+	invalid_content = 0;
+	
+	// 仅文字
+	text_only = 1;
+	// 仅图片
+	picture_only = 2;
+	// 文字+图片
+	text_picture = 3;
+	// 仅视频
+	radio_only = 4;
+	// 文字+视频
+	text_radio = 5;
+}
+
+// 朋友圈，操作类型
+enum MsgActionWeibo
+{
+	// 发朋友圈
+	publish_weibo = 0;
+	// 删除朋友圈
+	delete_weibo = 1;
+	// 点赞朋友圈
+	like_weibo = 2;
+	// 取消点赞朋友圈
+	cancel_like_weibo = 3;
+	// 评论朋友圈
+	comment_weibo = 4;
+	// 删除朋友圈评论
+	delete_comment_weibo = 5;
+	// 设置看某好友朋友圈
+	watch_someone_weibo = 6;
+	// 设置不看某好友朋友圈
+	not_watch_someone_weibo = 7;
+	// 设置不允许某好友看自己朋友圈
+	allow_someone_watch_weibo = 8;
+	// 设置允许某好与看自己朋友圈
+	not_allow_someone_watch_weibo = 9;
+}
+
+

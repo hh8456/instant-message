@@ -1,0 +1,12 @@
+syntax = "proto3";
+
+// import "common.proto";
+package db_struct;
+
+option go_package="instant-message/common-library/proto/db_struct";
+
+// weibo 表的 photos_bin 字段; 2019.11.15, 黄海
+message weiboPhotos
+{
+	repeated string photos = 1;
+}

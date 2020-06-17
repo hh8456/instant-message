@@ -1,0 +1,1583 @@
+////////////////////////////////////////////////////////////////////////
+
+syntax = "proto3";
+
+// import "common.proto";
+
+package msg_struct;
+
+message WebSocketMessage
+{
+	int32 msgId = 1;
+	string msgIdStr = 2;
+	bytes binMsg = 3;
+}
+
+message S2CErrorCode
+{
+	int64 errCode = 1;
+	int64 msgTimeStamp = 2;
+	string errNotice = 3;
+}
+
+// client - login
+message C2l_gate_addr
+{
+	int64 accountId = 1;
+}
+
+// login - client
+message L2c_gate_addr
+{
+	// gate 的IP有可能为空，客户端自行判断
+	string ip = 3;
+}
+
+// 注册
+message C2SRegisterAccount
+{
+	int64 accountId = 1;
+	string pwd = 2;
+	// 客户端时间戳, ( 系统当前时间的纳秒值 / 1000 ), 客户端填, 必须保证唯一, 用于跟客户端确认消息用
+	int64 cliTimeStamp = 3;
+	// 终端类型, 1 手机, 2 web
+	int32 terminalType = 4; 
+	// 验证码
+	string verificationCode = 5;
+	// 区号
+	string regionCode = 6;
+}
+
+message S2CRegisterAccount
+{
+	int64 accountId = 1;
+	// 角色名
+	string nickname = 2; 
+	// 收到的最后一条消息的时间戳
+	int64 lastMsgTimestamp = 3;
+	// "我"的环信帐号
+	HuanXinAccount huanXinAccount = 4;
+}
+
+// 登录
+message C2SLogin
+{
+	int64 accountId = 1;
+	// 客户端时间戳, ( 系统当前时间的纳秒值 / 1000 ), 客户端填, 必须保证唯一, 用于跟客户端确认消息用
+	int64 cliTimeStamp = 2;
+	string pwd = 3;
+	// 终端类型, 1 手机, 2 web
+	int32 terminalType = 4;
+}
+
+message C2SUsernameLogin
+{
+	string username = 1;
+	string pwd = 2;
+	// 客户端时间戳, ( 系统当前时间的纳秒值 / 1000 ), 客户端填, 必须保证唯一, 用于跟客户端确认消息用
+	int64 cliTimeStamp = 3;
+	// 终端类型, 1 手机, 2 web
+	int32 terminalType = 4;
+}
+
+// 用户简略信息,用于展示给其他用户看
+message UserBriefInfo
+{
+	int64 accountId = 1;		// 帐号
+	string nickname = 2;		// 昵称
+	string userName = 3;		// 用户名
+	string headPortrait = 4;	// 头像
+	string signature = 5;		// 签名
+}
+
+message FriendRequest
+{
+	// senderId 是发出好友请求的人
+	int64 senderId = 1;
+	int64 reqDateTime = 2;
+	string senderNickName = 3;
+	string senderHeadPortrait = 4;
+}
+
+message FriendVerification
+{
+	// friendId 同意了好友请求
+	int64 friendId = 1;
+	// 同意成为好友的时间
+	int64 becomeFriendDateTime = 2;
+	string friendNickName = 3;
+	string friendHeadPortrait = 4;
+}
+
+// 对应数据库表 chat_group_member 中的一条记录
+message ChatGroupMember
+{
+	int64 accountId = 1;
+	int64 chatGroupId = 2;
+}
+
+message FriendInfo
+{
+	int64 accountId = 1;
+	string nickName = 2;
+	string remarkName = 3;
+	string portraitUrl = 4;
+}
+
+// 聊天群
+message ChatGroup 
+{
+	int64 ChatGroupId = 1;
+	int64 Creator = 2;
+	string Name = 3;
+	string Pic = 4;
+}
+
+message PersonChatGroup
+{
+	// 群消息
+	ChatGroup chatGroup = 1;
+	// 收到的最后一条群聊时间戳
+	int64 lastMsgTimestamp = 2;
+}
+
+message HuanXinAccount
+{
+	string password = 1;
+}
+
+message S2CLogin
+{
+	int64 accountId = 1;
+	// 角色名
+	string nickname = 2;
+	// 头像 url 地址
+	string portraitUrl = 3;
+	// 收到的最后一条私聊消息的时间戳
+	int64 lastMsgTimestamp = 4;
+	// 数据库表 friend_req 中 获取的未读好友请求
+	repeated FriendRequest friendReqs= 5;
+	// 从数据库表 friend_verification 中 获取的好友验证通知
+	// 逻辑:
+	// A 向 B 请求加好友, 然后 A 离线; B 同意后会往 friend_verification 中插入记录
+	// A 再登录时,从 friend_verification 中查询到 B 的好友验证通知,
+	// 就把 B 添加到自己的联系人列表中
+	repeated FriendVerification friendVers = 6;
+	// 和 "我" 有共同群的群友, 各个群友可能分布在不同的群
+	// 1 从 chat_group_member 中查出 "我" 拥有的群号
+	// 2 从 chat_group_member 中按群号查出所有记录
+	repeated ChatGroupMember chatGroupMembers = 7;
+	// 用户申请加入我是群主的群消息
+	repeated ReqJoinChatGroup reqJoinChatGroup = 8;
+	// 好友列表
+	repeated FriendInfo friendInfo = 9;
+	// "我"加入的聊天群信息
+	repeated PersonChatGroup chatGroups = 10;
+	// "我"被删除好友信息
+	repeated int64 deleteFriendId = 11;
+	// "我"的环信帐号
+	HuanXinAccount huanXinAccount = 12;
+	// ”我“的代理、会员帐号
+	repeated AgentInfo agentInfo = 13;
+}
+
+message S2CUsernameLogin
+{
+	int64 accountId = 1;
+	// 角色名
+	string nickname = 2;
+	// 头像 url 地址
+	string portraitUrl = 3;
+	// 收到的最后一条私聊消息的时间戳
+	int64 lastMsgTimestamp = 4;
+	// 数据库表 friend_req 中 获取的未读好友请求
+	repeated FriendRequest friendReqs= 5;
+	// 从数据库表 friend_verification 中 获取的好友验证通知
+	// 逻辑:
+	// A 向 B 请求加好友, 然后 A 离线; B 同意后会往 friend_verification 中插入记录
+	// A 再登录时,从 friend_verification 中查询到 B 的好友验证通知,
+	// 就把 B 添加到自己的联系人列表中
+	repeated FriendVerification friendVers = 6;
+	// 和 "我" 有共同群的群友, 各个群友可能分布在不同的群
+	// 1 从 chat_group_member 中查出 "我" 拥有的群号
+	// 2 从 chat_group_member 中按群号查出所有记录
+	repeated ChatGroupMember chatGroupMembers = 7;
+	// 用户申请加入我是群主的群消息
+	repeated ReqJoinChatGroup reqJoinChatGroup = 8;
+	// 好友列表
+	repeated FriendInfo friendInfo = 9;
+	// "我"加入的聊天群信息
+	repeated PersonChatGroup chatGroups = 10;
+	// "我"被删除好友信息
+	repeated int64 deleteFriendId = 11;
+	// "我"的环信帐号
+	HuanXinAccount huanXinAccount = 12;
+	// ”我“的代理、会员帐号
+	repeated AgentInfo agentInfo = 13;
+}
+
+message AgentInfo
+{
+	int64 agentId = 1;
+	string agentUsername = 2;
+	string agentportraitUrl = 3;
+}
+
+// 注销账号, 即正常退出游戏。网络中断或者手机重启属于退出游戏异常
+message C2SLogout
+{
+}
+
+message S2CLogout
+{
+	// 发送空包，IOS会不识别
+	string str = 1;
+}
+
+// 心跳包
+message C2SHeartbeat
+{
+	// 客户端本地时间戳, 单位是毫秒
+	int64 timeStamp = 1;
+}
+
+message S2CHeartbeat
+{
+	// 客户端本地时间戳, 单位是毫秒
+	int64 timeStamp = 1;
+}
+
+// 把客户端踢下线
+message S2CKick
+{
+	string msg = 1;   // 原因信息
+}
+
+message S2CRepeatLogin 
+{
+}
+
+// 修改名字
+message C2SRename
+{
+	string newname = 1;   // 取的角色名
+}
+
+message S2CRename
+{
+	string newname  = 1;   // 新角色名
+}
+
+message DeviceInfo
+{
+	string DeviceInfo = 1; // 手机硬件ID
+	string DeviceProducter = 2; // 手机厂商
+}
+
+// 上传硬件信息
+message C2SDeviceInfo
+{
+	DeviceInfo deviceInfo = 1;
+}
+
+message S2CDeviceInfo
+{
+	string ret = 1;
+}
+
+// 设置用户名（用户名唯一，且不许修改）
+message C2SSetUserName
+{
+	string userName = 1;
+}
+
+message S2CSetUserName
+{
+	string ret = 1;
+}
+
+// 头像
+message C2SSetHeadPortrait
+{
+	string headPortraitUrl = 1;
+}
+
+message S2CSetHeadPortrait
+{
+	string ret = 1;
+}
+
+// 修改密码
+message C2SChangePassword
+{
+	string strPassword = 1;
+}
+
+message S2CChangePassword
+{
+	string ret = 1;
+}
+
+// 忘记密码
+message C2SForgetPassword
+{
+	int64 phoneNum = 1;
+	string password = 2;
+	// 短信验证码
+	string verificationCode = 3;
+	// 区号
+	string regionCode = 4;
+}
+
+message S2CForgetPassword
+{
+	string ret = 1;
+}
+
+// 修改好友备注名
+message C2SSetFriendRemarkName
+{
+	int64 friendId = 1;
+	string friendRemarkName = 2;
+}
+
+message S2CSetFriendRemarkName
+{
+	int64 friendId = 1;
+	string friendRemarkName = 2;
+}
+
+// 获取验证码用途
+enum VerificationCodeAction
+{
+	// 注册
+	register = 0;
+	// 忘记密码
+	forget_password = 1;
+}
+
+// 获取验证码
+message C2SGetVerificationCode
+{
+	int64 phoneNum = 1;
+	string region = 2;
+	VerificationCodeAction action = 3;
+}
+
+message S2CGetVerificationCode
+{
+	string ret = 1;
+}
+
+// 音频聊天内容
+message VoiceMessage
+{
+	int64 audioSecond = 1;
+	string audioUrl = 2;
+}
+
+// 视频聊天内容
+message VideoMessage
+{
+	int64 videoSecond = 1;
+	string videoUrl = 2;
+	string videoThumbnail = 3;
+}
+
+// 文件聊天内容
+message FileMessage
+{
+	int64 fileSize = 1;
+	string fileUrl = 2;
+	string fileThumbnail = 3;
+}
+
+// 名片
+message CardMessage{
+    int64 id = 1;
+    string nickName = 2;
+    string portrait = 3;
+}
+
+// 时间戳 srvTimeStamp 在本机是唯一的, 而且用户也是登录到固定的 gate 上
+// 所以 receiverId, senderId, srvTimeStamp 这三个元素可以作为一个消息包的指纹
+message ChatMessage
+{
+	// 接收者的 id, 客户端填
+	int64 receiverId = 1; 
+	// 发送者 id, 服务端填
+	int64 senderId = 2;
+	// 文字信息/图片url/语音文件url, 客户端填
+	string text = 3;
+	// 服务端时间戳, ( 系统当前时间的纳秒值 / 1000 ), 服务端填, 必须保证唯一
+	int64 srvTimeStamp = 4;
+	// 消息类型: word 文字, pic 图片, voice 语音
+	string msgType = 5;
+	// 发言者名字, 用于在聊天过程中实时让接受者知道改名
+	string senderName = 6; 
+	// 客户端accountId+时间戳, ( 系统当前时间的纳秒值 / 1000 ), 客户端填, 必须保证唯一, 用于跟客户端确认消息用
+	string accountIDCliTimeStamp = 7;
+	// 发送者的头像url地址
+	string senderheadPortraitUrl = 8;
+	// 是否撤回消息, true 撤回消息, false 不撤回
+	bool withDraw = 9;
+	// 好友备注名
+	string senderRemarkName = 10;
+	// 音频聊天内容
+	VoiceMessage voiceMessage = 11;
+	// 视频聊天内容
+	VideoMessage videoMessage = 12;
+	// 文件聊天内容
+	FileMessage fileMessage = 13;
+	// 名片
+	CardMessage cardMessage = 14;
+	// 发送者的上级代理 id
+	int64 senderAgentId= 15;
+}
+
+// A 向服务器发送一条私聊消息, 转发给 B
+message C2SPrivateChat
+{
+	ChatMessage chatMsg = 1;
+	// 客户端时间戳, ( 系统当前时间的纳秒值 / 1000 ), 客户端填, 必须保证唯一, 用于跟客户端确认消息用
+	int64 cliTimeStamp = 2;
+}
+
+// 服务器把 A 发送的私聊消息,投递给 MQ
+message MQPrivateChat
+{
+	ChatMessage chatMsg = 1;
+}
+
+// 服务器把私聊消息保存进 redis, 投递给 MQ 后, 向 A 回复确认消息
+message S2CPrivateChat
+{
+	// B 的 id
+	int64 receiverId = 1;
+	// 发送者的头像
+	string senderheadPortraitUrl = 2;
+	// 服务器的时间戳, 客户端转换后显示在界面上
+	int64 srvTimeStamp = 3;
+	// 这是 A 发来的时间戳, 用来向 A 确定某条聊天记录
+	int64 cliTimeStamp = 4;
+	// 这是 A 发来的时间戳, 用来向 A 确定某条聊天记录
+	string accountIDCliTimeStamp = 5;
+}
+
+// B 收到 A 发来的消息
+message S2CRecvPrivateChat
+{
+	ChatMessage chatMsg = 1;
+}
+
+// 收到"我"在其他终端上发出的消息
+// 比如 a  登录了 APP 和 WEB 端的 IM, 在 APP 上发给别人的私聊消息, WEB 上也能看到
+message S2COtherTerminalPrivateChat
+{
+	ChatMessage chatMsg = 1;
+}
+
+// 账号在其他地方登录
+message S2CLoginSomewhereElse
+{
+	int64 srvTimeStamp = 1;
+}
+
+// A 告诉服务端,收到的最后一条消息的时间戳, 取值来自 S2CPrivateChat.srvTimeStamp, S2CRecvPrivateChat.chatMsg.srvTimeStamp
+// A 发给 B 的消息, 算 A 的聊天记录, 所以取值来自 S2CPrivateChat.srvTimeStamp
+// B 发给 A 的消息, 算 A 的聊天记录, 所以取值来自 S2CRecvPrivateChat.chatMsg.srvTimeStamp
+message C2SLastMsgTimeStamp
+{
+	int64 srvTimeStamp = 2;
+}
+
+// 客户端登录后发送这条消息获取离线私聊消息
+message C2SGetOfflinePrivateChatMsg
+{
+	// 这个值是 web 端设置为 true, 安卓和 ios 不需要设置
+	bool isWebSide = 1;
+}
+
+message S2CGetOfflinePrivateChatMsg
+{
+	repeated ChatMessage msgs = 1;
+	// srvTimeStamp 字段是当做占位符来让 iOS 客户端正常运行 
+	// 如果没有 srvTimeStamp 字段, 当 repeated chatMessage msgs 为空时
+	// iOS 客户端会发生异常
+	int64 srvTimeStamp = 2;
+}
+
+message C2SHuanXinPush
+{
+	int64 friendId = 1;
+}
+
+message S2CHuanXinPush
+{
+	string ret = 1;
+}
+
+message C2SPicWillBeSend
+{
+}
+
+message S2CPicWillBeSend
+{
+	int64 uid = 1;
+}
+
+
+message C2SAddFriend
+{
+	// 发起好友请求的人
+	int64 senderId = 1;
+	// 接收好友请求的人
+	int64 receiverId = 2;
+	int64 msgTimestamp = 3;
+}
+
+message MQAddFriend
+{
+	C2SAddFriend addFriend = 1;
+	int64 srvTimeStamp = 2;
+	string senderNickName = 3;
+}
+
+message S2CAddFriend
+{
+	// 发起好友请求的人
+	int64 senderId = 1;
+	// 接收好友请求的人
+	int64 receiverId = 2;
+	int64 srvTimeStamp = 3;
+}
+
+message S2CRecvAddFriend
+{
+	// 发起好友请求的人
+	int64 senderId = 1;
+	// 接收好友请求的人
+	int64 receiverId = 2;
+	int64 srvTimeStamp = 3;
+	string senderNickName = 4;
+	string senderHeadPortrait = 5;
+}
+
+message C2SAgreeBecomeFriend
+{
+	// 发起好友请求的人, C2SAddFriend.senderId
+	int64 senderId = 1;
+	// 接收好友请求的人, 也就是发 C2SAgreeBecomeFriend 消息的人
+	int64 receiverId = 2;
+	int64 msgTimestamp = 3;
+}
+
+message S2CAgreeBecomeFriend
+{
+	// 发起好友请求的人, C2SAddFriend.senderId
+	int64 senderId = 1;
+	int64 msgTimestamp = 2;
+	string senderNickName = 3;
+	string agreeBecomeFriendHeadPortrait = 4;
+}
+
+message S2CRecvAgreeBecomeFriend
+{
+	// 发起好友请求的人, C2SAddFriend.senderId
+	int64 senderId = 1;
+	// 接收好友请求的人, 也就是发 C2SAgreeBecomeFriend 消息的人
+	int64 receiverId = 2;
+	string receiverNickName = 3;
+	string receiverHeadPortrait = 4;
+}
+
+message MQAgreeBecomeFriend
+{
+	C2SAgreeBecomeFriend agreeBeFriend = 1;
+	int64 msgTimestamp = 2;
+	string friendNickName = 3;
+}
+
+message S2COtherTerminalAgreeBecomeFriend
+{
+	// 发起好友请求的人, C2SAddFriend.senderId
+	int64 senderId = 1;
+	/*int64 msgTimestamp = 2;*/
+	string senderNickName = 3;
+}
+
+message C2SReadFriendReq
+{
+	int64 senderId = 1;
+}
+
+message S2CReadFriendReq
+{
+	int64 senderId = 1;
+}
+
+message C2SDeleteFriend
+{
+	int64 friendId = 1;
+}
+
+message MQDeleteFriend
+{
+	int64 friendId = 1;
+}
+
+message S2CDeleteFriend
+{
+	int64 friendId = 1;
+}
+
+message S2CRecvDeleteFriend
+{
+	int64 friendId = 1;
+}
+
+message C2SConfirmDeleteFriend
+{
+	int64 friendId = 1;
+}
+
+message S2CConfirmDeleteFriend
+{
+	int64 friendId = 1;
+}
+
+message C2SCreateChatGroup
+{
+	// 群组名称
+	string chatGroupName = 1;
+	// 群组图片, 要注意二进制安全
+	string picChatGroup = 2;
+	// 建群时邀请的好友
+	repeated int64 firendIds = 3;
+}
+
+// 由建群的群主填写下面结构体的内容
+message CreateChatGroup
+{
+	// 群组名称
+	string chatGroupName = 1;
+	// 群组图片, 要注意二进制安全
+	string picChatGroup = 2;
+	// 建群时邀请的好友
+	repeated int64 members = 3;
+	// 群唯一 id
+	int64 chatGroupId = 4;
+	// 群主 id
+	int64 chatGroupAdminId = 5;
+	// 群主所在的服务器的 MQ 主题
+	string topic = 6;
+}
+
+message S2CCreateChatGroup
+{
+	CreateChatGroup ccg = 1;
+}
+
+message MQCreateChatGroup
+{
+	CreateChatGroup ccg = 1;
+}
+
+message S2CRecvCreateChatGroup
+{
+	CreateChatGroup ccg = 1;
+}
+
+message ReqJoinChatGroup
+{
+	// 群组ID
+	int64 chatGroupId = 1;
+	// 申请者ID
+	int64 userId = 2;	
+	// 申请加群消息
+	string chatGroupReqMessage = 3;	
+	// 申请者昵称
+	string userNickName = 4;
+}
+
+// 用户主动申请加入聊天群
+message C2SReqJoinChatGroup
+{
+	ReqJoinChatGroup rjcg = 1;
+}
+
+// 服务器回复用户主动申请加入聊天群消息
+message S2CRecvReqJoinChatGroup
+{
+	ReqJoinChatGroup rjcg = 1;
+}
+
+// MQ 通知群主，某用户主动加群消息
+message MQReqJoinChatGroup
+{
+	ReqJoinChatGroup rjcg = 1;
+	int64 reqUid = 2;
+}
+
+// 服务器发送到群主，某用户主动加群消息
+message S2CSomeOneReqJoinChatGroup
+{
+	ReqJoinChatGroup rjcg = 1;
+	int64 reqUid = 2;
+}
+
+// 群主同意用户加群申请
+message C2SAgreeSomeOneReqJoinChatGroup
+{
+	// 群组ID
+	int64 chatGroupId = 1;
+	// 申请ID
+	int64 reqUid = 2;
+	// 申请者ID
+	int64 reqId = 3;
+	// 申请者昵称
+	string reqNickName = 4;
+}
+
+// 通知 MQ，群主同意加群申请消息
+message MQAgreeSomeOneReqJoinChatGroup
+{
+	// 群组ID
+	int64 chatGroupId = 1;
+}
+
+// 通知 MQ，群主同意某用户加群申请消息
+message MQManagerAgreeSomeOneReqJoinChatGroup
+{
+	// 群组ID
+	int64 chatGroupId = 1;
+	// 用户ID
+	int64 userId = 2;
+	// 用户昵称
+	string userNickName = 3;
+}
+
+// 通知申请者，群主同意加群申请消息
+message S2CManagerAgreeJoinChatGroup
+{
+	// 群组ID
+	int64 chatGroupId = 1;
+}
+
+// 通知群成员，群主同意某用户加群申请消息
+message S2CManagerAgreeSomeOneReqJoinChatGroup
+{
+	// 群组ID
+	int64 chatGroupId = 1;
+	// 申请者用户ID
+	int64 userId = 2;
+	string userNickName = 3;	
+}
+
+// 回复群主，同意某用户加入聊天群申请
+message S2CRecvManagerAgreeSomeOneReqJoinChatGroup{
+	// 群组ID
+	int64 chatGroupId = 1;
+	// 申请者用户ID
+	int64 userId = 2;
+}
+
+// 群主拒绝用户加群
+message C2SRefuseSomeOneReqJoinChatGroup
+{
+	// 群组ID
+	int64 chatGroupId = 1;
+	// 申请者用户ID
+	int64 userId = 2;
+	// 申请ID
+	int64 reqUid = 3;
+	// 拒绝消息
+	string refuseReqJoinChatGroupMessage = 4;
+}
+
+// 通知 MQ，群主拒绝用户加群申请
+message MQRefuseSomeOneReqJoinChatGroup
+{
+	// 群组ID
+	int64 chatGroupId = 1;
+	// 申请ID
+	int64 reqUid = 2;
+	// 拒绝消息
+	string refuseReqJoinChatGroupMessage = 3;
+}
+
+// 通知用户，群主拒绝加群申请
+message S2CManagerRefuseJoinChatGroup
+{
+	// 群组ID
+	int64 chatGroupId = 1;
+	// 拒绝消息
+	string refuseReqJoinChatGroupMessage = 2;
+}
+
+
+message ChatGroupMemberRds
+{
+	// 成员ID
+	int64 userId = 1;
+	// 成员昵称
+	string userNickName = 2;
+	// 群成员身份标识	// 暂定 1为群主，2为普通群成员（方便后期扩展其他身份）
+	int64 flag = 3;
+	// 成员头像url地址
+	string userHeadPortraitUrl = 4;
+}
+
+// 拉取群信息
+message C2SChatGroupInfo
+{
+	// 群组ID
+	int64 chatGroupId = 1;
+}
+
+// 回复用户拉取群信息
+message S2CChatGroupInfo
+{
+	// 群组ID
+	int64 chatGroupId = 1;
+	// 群名称
+	string chatGroupName = 2;
+	// 群头像
+	string chatGroupHeadPortrait = 3;
+	// 群主ID
+	int64 chatGroupOwnerId = 4;
+	// 群成员id和昵称
+	repeated ChatGroupMemberRds chatGroupMemberRds = 5;	
+}
+
+message InviteJoinChatGroup
+{
+	// 群组ID
+	int64 chatGroupId = 1;
+	// 邀请者ID
+	int64 InviterId = 2;
+	// 邀请者昵称
+	string InviterNickName = 3;
+	// 被邀请者ID
+	int64 InviteeId = 4;
+	// 被邀请者昵称
+	string InviteeNickName = 5;
+}
+
+// 群成员邀请好友加群
+message C2SInviteJoinChatGroup
+{
+	// 群组ID
+	int64 chatGroupId = 1;
+	// 好友ID
+	repeated int64 friendIds = 2;
+}
+
+// MQ 传递群成员邀请好友加群
+message MQInviteJoinChatGroup
+{
+	InviteJoinChatGroup inviteJoinChatGroup = 1;
+}
+
+// 通知群所有群成员，群成员邀请好友加群
+message S2CInviteYouJoinChatGroup
+{
+	InviteJoinChatGroup inviteJoinChatGroup = 1;
+}
+
+// 回复用户邀请好友加群
+message S2CRecvInviteJoinChatGroup
+{
+	// 群组ID
+	int64 chatGroupId = 1;
+}
+
+// 群成员退群
+message C2SCancelChatGroup
+{
+	// 群ID
+	int64 chatGroupId = 1;
+}
+
+message CancelChatGroup
+{
+	// 群ID
+	int64 chatGroupId = 1;
+	// 退群成员ID
+	int64 userId = 2;
+	// 退群成员昵称
+	string userNickName = 3;
+}
+
+// MQ 通知群成员某成员退群
+message MQCancelChatGroup
+{
+	CancelChatGroup cancelChatGroup = 1;
+}
+
+// 服务器通知群成员某成员退群
+message S2CSomeOneCancelChatGroup
+{
+	CancelChatGroup cancelChatGroup = 1;	
+}
+
+// 服务器回复群成员退群成功消息
+message S2CRecvCancelChatGroup
+{
+	// 群ID
+	int64 chatGroupId = 1;
+}
+
+// 群主解散群消息
+message C2SUnChatGroup
+{
+	// 群ID
+	int64 chatGroupId = 1;
+}
+
+// MQ 通知所有群成员，群主解散群消息
+message MQUnChatGroup
+{
+	// 群ID
+	int64 chatGroupId = 1;
+}
+
+// 服务器通知所有群成员，群主解散群消息
+message S2CUnChatGroup
+{
+	// 群ID
+	int64 chatGroupId = 1;
+}
+
+// 服务器回复群主解散群消息
+message S2CRecvUnChatGroup
+{
+	// 群ID
+	int64 chatGroupId = 1;
+}
+
+message ChatGroupKick
+{
+	// 群ID
+	int64 chatGroupId = 1;
+	// 被踢用户ID
+	int64 userId = 2;
+	// 被踢用户昵称 // 由服务器填写，客户端填写无效
+	string userNickName = 3;
+}
+
+// 群主踢人
+message C2SChatGroupKick
+{
+	ChatGroupKick chatGroupKick = 1;
+}
+
+// MQ 通知所有群成员，群主踢人消息
+message MQChatGroupKick
+{
+	ChatGroupKick chatGroupKick = 1;
+}
+
+// 服务器通知被踢出群的用户
+message S2CKickedByChatGroupManager
+{
+	ChatGroupKick chatGroupKick = 1;	
+}
+
+// 服务器通知其他群主成员，某成员被群主踢出群
+message S2CManagerKickSomeOne
+{
+	ChatGroupKick chatGroupKick = 1;	
+}
+
+// 服务器回复群主踢人成功消息
+message S2CRecvChatGroupKick
+{
+	// 群ID
+	int64 chatGroupId = 1;
+}
+
+// 用户获取群列表
+message C2SChatGroupList
+{
+	
+}
+
+// 回复用户获取群列表
+message S2CChatGroupList
+{
+	repeated int64 chatGroupId = 1;
+}
+
+// 时间戳 srvTimeStamp 在本机是唯一的, 而且用户也是登录到固定的 gate 上
+// 所以 receiveGroupId, senderId, srvTimeStamp 这三个元素可以作为一个消息包的指纹
+message GroupMessage
+{
+	// 接收群的 id, 客户端填
+	int64 receiveGroupId = 1; 
+	// 发送者 id, 服务端填
+	int64 senderId = 2;
+	// 文字信息/图片url/语音文件url, 客户端填
+	string text = 3;
+	// 服务端时间戳, ( 系统当前时间的纳秒值 / 1000 ), 服务端填, 必须保证唯一
+	int64 srvTimeStamp = 4;
+	// 消息类型: word 文字, pic 图片, voice 语音,
+	string msgType = 5;
+	// 发言者名字, 用于在聊天过程中实时让接受者知道改名
+	string senderName = 6; 
+	// 客户端时间戳, ( 系统当前时间的纳秒值 / 1000 ), 客户端填, 必须保证唯一, 用于跟客户端确认消息用
+	string accoutIdCliTimeStamp = 7;	
+	// 发送者的头像url地址
+	string senderheadPortraitUrl = 8;
+	// 是否撤回消息, true 撤回消息, false 不撤回
+	bool withDraw = 9;
+	// 音频聊天内容
+	VoiceMessage voiceMessage = 10;
+	// 视频聊天内容
+	VideoMessage videoMessage = 11;
+	// 文件聊天内容
+	FileMessage fileMessage = 12;
+	// 名片
+	CardMessage cardMessage = 13;
+}
+
+// A 向服务器发送一条群聊消息, 转发给群内所有成员
+message C2SGroupChat
+{
+	GroupMessage chatMsg = 1;
+	// 客户端时间戳, ( 系统当前时间的纳秒值 / 1000 ), 客户端填, 必须保证唯一, 用于跟客户端确认消息用
+	int64 cliTimeStamp = 2;
+}
+
+// 服务器把 A 发送的群聊消息,投递给 MQ
+message MQGroupChat
+{
+	GroupMessage chatMsg = 1;
+	int64 receiverId = 2;
+}
+
+// 服务器把群聊消息保存进 redis, 投递给 MQ 后, 向 A 回复确认消息
+message S2CGroupChat
+{
+	// 群 的 id
+	int64 receiverId = 1; 
+	// 服务器的时间戳, 客户端转换后显示在界面上
+	int64 srvTimeStamp = 2;
+	// 客户端时间戳, ( 系统当前时间的纳秒值 / 1000 ), 客户端填, 必须保证唯一, 用于跟客户端确认消息用
+	string accoutIdCliTimeStamp = 3;
+	// 这是 A 发来的时间戳, 用来向 A 确定某条聊天记录
+	int64 cliTimeStamp = 4;	
+}
+
+// 群成员 收到 A 发来的群消息
+message S2CRecvGroupChat
+{
+	GroupMessage chatMsg = 1;
+}
+
+// A 告诉服务端,收到的最后一条消息的时间戳, 取值来自 S2CGroupChat.srvTimeStamp, S2CRecvGroupChat.chatMsg.srvTimeStamp
+// A 发出的群聊消息, 算 A 的聊天记录, 所以取值来自 S2CGroupChat.srvTimeStamp
+// 其他群用户发给 A 的消息, 算 A 的聊天记录, 所以取值来自 S2CRecvGroupChat.chatMsg.srvTimeStamp
+message C2SChatGroupLastMsgTimeStamp
+{
+	int64 srvTimeStamp = 1;
+	// 聊天群的 id
+	int64 chatGroupId = 2;
+}
+
+// 群成员获取群离线消息
+message C2SGetOfflineGroupChatMsg
+{
+	// 群id
+	int64 chatGroupId = 1;
+	// 群最后一条消息时间戳
+	int64 chatGroupLastMessageTimestamp = 2;
+	// 客户端时间戳，客户端用于消息识别
+	int64 msgTimestamp = 3;
+}
+
+// 服务器回复客户端，群成员获取群离线消息
+message S2CGetOfflineGroupChatMsg
+{
+	// 群id
+	int64 chatGroupId = 1;
+	// 群离线消息
+	repeated GroupMessage msgs = 2;
+	// 客户端时间戳，客户端用于消息识别
+	int64 msgTimestamp = 3;	
+}
+
+// 撤回群聊消息
+message C2SWithdrawGroupMessage
+{
+	// 已发送消息的服务端时间戳, ( 系统当前时间的纳秒值 / 1000 )
+	int64 serverTimeStamp = 1;
+	int64 groupId = 2;
+}
+
+message S2CWithdrawGroupMessage
+{
+	int64 serverTimeStamp = 1;
+}
+
+// 查找用户
+message C2SFindUser
+{
+	string key = 1;
+}
+
+message S2CFindUser
+{
+	// 用户简略信息
+	UserBriefInfo userBriefInfo = 1;
+	// 是否展示朋友圈
+	bool bShow = 2;
+	// 朋友圈图片或者视频Url地址(可以为空，最多4个）
+	repeated string url = 3;
+}
+
+// 好友拉入黑名单
+message C2SAddBlackList
+{
+	int64 friendId = 1;
+}
+
+message S2CAddBlackList
+{
+	int64 friendId = 1;
+}
+
+// 黑名单好友移出黑名单
+message C2SMoveOutFriendBlackList
+{
+	int64 friendId = 1;
+}
+
+message S2CMoveOutFriendBlackList
+{
+	int64 friendId = 1;
+}
+
+// 获取黑名单列表
+message C2SGetFriendBlackList
+{
+
+}
+
+message S2CGetFriendBlackList
+{
+	repeated int64 blackListIds = 1;
+	string ret = 2;
+}
+
+// 设置朋友圈相册封面图片
+message C2SSetWeiboCover
+{
+	string weiboCoverPic = 1;
+}
+
+message S2CSetWeiboCover
+{
+	string ret = 1;
+}
+
+// 获取朋友圈相册封面图片
+message C2SGetWeiboCover
+{
+	int64 userId = 1;
+}
+
+message S2CGetWeiboCover
+{
+	string strWeiboCoverPicUrl = 1;
+	bool isLikeWeiboCover = 2;
+	string ret = 3;
+}
+
+// 用户点赞好友朋友圈相册封面图片
+message C2SLikeFriendWeiboCover
+{
+	int64 friendId = 1;
+}
+
+message S2CLikeFriendWeiboCover
+{
+	string ret = 1;
+}
+
+message Weibo
+{
+	// 此条朋友圈Id
+	int64 weiboId = 1;
+	// 发朋友圈的账户Id
+	int64 publisherId = 2;
+	// 发朋友圈的账户昵称
+	string publisherNickName = 3;
+	// 朋友圈类型
+	int64 type = 4;
+	// 朋友圈文字信息
+	string text = 5;
+	// 朋友圈图片、视频信息
+	bytes url_bin = 6;
+	// 发朋友圈服务器时间
+	int64 srvTimestamp = 7;
+	// 朋友圈状态
+	bool bDelete = 8;
+}
+
+message WeiboUrl
+{
+	repeated string urls = 1;
+}
+
+// 发朋友圈
+message C2SPublishWeibo
+{
+	// 朋友圈内容类型（msg_id.proto中 MsgWeibo 枚举的值）
+	int64 contentType = 1;
+	// 朋友圈文字
+	string text = 2;
+	// 朋友圈图片url地址
+	repeated string url = 3;
+	// 此条朋友圈id（服务器填入）
+	int64 weiboId = 4;
+}
+
+message MQPublishWeibo
+{
+	// msg_weibo.proto中 message Weibo的json proto序列化字符串
+	Weibo weibo = 1;
+}
+
+message S2CPublishWeibo
+{
+	Weibo weibo = 1;
+}
+
+message S2CRecvPublishWeibo
+{
+	int64 weiboId = 1;
+}
+
+message LikeWeibo
+{
+	// 朋友圈id
+	int64 weiboId = 1;
+	// 发朋友圈的用户id
+	int64 weiboPublisherId = 2;
+	// 点赞的用户id
+	int64 likerId = 3;
+	// 点赞的用户昵称
+	string likerNickName = 4;
+}
+
+// 点赞朋友圈
+message C2SLikeWeibo
+{
+	// 发朋友圈的用户的id
+	int64 weiboPublisherId = 1;
+	// 朋友圈id
+	int64 weiboId = 2;
+}
+
+message MQLikeWeibo
+{
+	LikeWeibo likeWeibo = 1;
+}
+
+message S2CLikeWeibo
+{
+	LikeWeibo likeWeibo = 1;
+}
+
+message S2CRecvLikeWeibo
+{
+	string ret = 1;
+}
+
+// 取消点赞朋友圈
+message C2SCancelLikeWeibo
+{
+	// 发朋友圈的用户的id
+	int64 weiboPublisherId = 1;
+	// 朋友圈id
+	int64 weiboId = 2;	
+}
+
+message S2CCancelLikeWeibo
+{
+	string ret = 1;
+}
+
+message ReplyWeibo
+{
+	// 朋友圈id(客户端填)
+	int64 weiboId = 1;
+	// 发朋友圈的用户id(客户端填)
+	int64 weiboPublisherId = 2;
+	// 此条朋友圈评论Id（服务器填）
+	int64 commentedId = 3;
+	// 此条评论回复的评论Id（如果是评论朋友圈，则填0;如果是回复评论Id，客户端填被回复的评论Id）
+	int64 beCommentedId = 4;
+	// 被评论者Id（如果是评论朋友圈，则填发朋友圈的用户Id;如果是回复评论Id，客户端填被回复评论的发布者Id）
+	int64 beCommentatorId = 5;
+	// 评论者Id（服务器填）
+	int64 commentatorId = 6;
+	// 评论内容(客户端填)
+	string commentContent = 7;
+	// 评论时间（服务器填）
+	int64 commentTimeStamp = 8;
+}
+
+// 评论朋友圈
+message C2SReplyWeibo
+{
+	ReplyWeibo replyWeibo = 1;
+}
+
+message MQReplyWeibo
+{
+	ReplyWeibo replyWeibo = 1;
+}
+
+message S2CReplyWeibo
+{
+	ReplyWeibo replyWeibo = 1;
+}
+
+message S2CRecvReplyWeibo
+{
+	// 当前评论成功的评论Id
+	int64 commentId = 1;
+}
+
+// 删除朋友圈评论
+message C2SDeleteWeiboReply
+{
+	// 朋友圈id
+	int64 weiboId = 1;
+	// 发朋友圈的用户id
+	int64 weiboPublisherId = 2;
+	// 评论id
+	int64 commentId = 3;
+}
+
+message S2CDeleteWeiboReply
+{
+	string ret = 1;
+}
+
+// 删除朋友圈
+message C2SDeleteWeibo
+{
+	int64 weiboId = 1;
+}
+
+message MQDeleteWeibo 
+{
+	// 发朋友圈的好友
+	int64 friendId = 1;
+	// 朋友圈id
+	int64 weiboId = 2;
+}
+
+message S2CDeleteWeibo
+{
+	// 发朋友圈的好友
+	int64 friendId = 1;
+	// 朋友圈id
+	int64 weiboId = 2;	
+}
+
+message S2CRecvDeleteWeibo
+{
+	string ret = 1;
+}
+
+message BrowseWeibo
+{
+	// 朋友圈
+	Weibo weibo = 1;
+	// 朋友圈点赞Id
+	repeated int64 likerId = 2;
+	// 朋友圈评论
+	repeated ReplyWeibo replayWeibo = 3;
+}
+
+// 浏览某人朋友圈(某人可以是自己，也可以是好友)
+message C2SBrowseSomeoneWeibo
+{
+	int64 lastTimeStamp = 1;
+	int64 friendId = 2;
+}
+
+message S2CBrowseSomeoneWeibo
+{
+	repeated BrowseWeibo browseWeibo = 1;
+	FriendLookWeiboStrategy strategy = 2;
+	string ret = 3;
+}
+
+// 浏览好友朋友圈
+message C2SBrowseFriendWeibo
+{
+	int64 friendId = 1;
+	int64 lastTimeStamp = 2;
+}
+
+message S2CBrowseFriendWeibo
+{
+	repeated BrowseWeibo browseWeibo = 1;
+}
+
+message C2SBrowseAllWeibo
+{
+	int64 lastMsgTimestamp = 1;
+}
+
+message S2CBrowseAllWeibo
+{
+	repeated BrowseWeibo browseWeibo = 1;
+	// 占位符,避免客户端解析出错
+	string ret = 2;
+}
+
+// 设置不看某好友朋友圈开关
+message C2SDontLookFriendWeibo
+{
+	repeated int64 friendIds = 1;
+	// bNotLook = true表示不看某好友朋友圈，false表示看某好友朋友圈
+	bool bNotLook = 2;
+}
+
+message S2CDontLookFriendWeibo
+{
+	// 服务端返回所有的好友简略信息, 我不看这些好友的朋友圈
+	repeated UserBriefInfo friendBriefInfos = 1;
+	string ret = 2;	
+}
+
+// 设置不允许某好友看自己朋友圈开关
+message C2SForbiddenFriendLookWeibo
+{
+	repeated int64 friendIds = 1;
+	// bForbidden = true表示不允许某好友看自己朋友圈，false表示允许某好友看自己朋友圈
+	bool bForbidden = 2;	
+}
+
+message S2CForbiddenFriendLookWeibo
+{
+	// 服务端返回所有的好友 id 集合, 这些好友不能看我的朋友圈
+	repeated UserBriefInfo friendBriefInfos = 1;
+	string ret = 2;
+}
+
+// 设置是否允许陌生人查看自己的10条朋友圈
+message C2SAllowStrangerLookWeibo
+{
+	// allow = true 表示允许陌生人查看自己朋友圈，反之，不允许
+	bool allow = 1;	
+}
+
+message S2CAllowStrangerLookWeibo
+{
+	string ret = 1;
+}
+
+// 获取是否允许陌生人查看朋友圈开关
+message C2SIsAllowStrangerLookWeibo
+{
+
+}
+
+message S2CIsAllowStrangerLookWeibo 
+{
+	// true表示允许
+	bool bAllow = 1;
+	string ret = 2;
+}
+
+enum FriendLookWeiboStrategy {
+	// 全部可看(默认)
+	undefined = 0;
+	// 半年
+	halfYear = 1;
+	// 一个月
+	oneMonth = 2;
+	// 三天
+	threeDays = 3;
+}
+
+// 获取允许好友查看朋友圈时间范围
+message C2SGetFriendLookWeiboStrategy
+{
+	
+}
+
+message S2CGetFriendLookWeiboStrategy
+{
+	FriendLookWeiboStrategy strategy = 1;
+	string ret = 2;
+}
+
+// 设置允许朋友查看自己朋友圈的范围
+message C2SFriendLookWeiboStrategy
+{
+	FriendLookWeiboStrategy strategy = 1;
+}
+
+message S2CFriendLookWeiboStrategy
+{
+	string ret = 1;
+}
+
+// 获取不看好友朋友圈的好友列表
+message C2SGetDontLookFriendWeiboList {
+	
+}
+
+message S2CGetDontLookFriendWeiboList {
+	repeated UserBriefInfo friendBriefInfo = 1;
+	string ret = 2;
+}
+
+// 获取禁止好友看我朋友圈的好友列表
+message C2SGetForbiddenFriendLookWeiboList {
+
+}
+
+message S2CGetForbiddenFriendLookWeiboList {
+	repeated UserBriefInfo friendBriefInfo = 1;
+	string ret = 2;
+}
+
+message C2SWithdrawMessage
+{
+	// 已发送消息的服务端时间戳, ( 系统当前时间的纳秒值 / 1000 )
+	int64 serverTimeStamp = 1;
+	int64 receiverId = 2;
+}
+
+message S2CWithdrawMessage
+{
+	int64 serverTimeStamp = 1;
+}
+
+message C2SThirdPlatformAccountLogin
+{
+	string token = 1;
+	int32 terminalType = 2;
+}
+
+message S2CThirdPlatformAccountLogin
+{
+	int64 accountId = 1;
+	// 角色名
+	string nickname = 2;
+	// 收到的最后一条私聊消息的时间戳
+	int64 lastMsgTimestamp = 3;
+	int64 agentId = 4;
+	string agentNickname = 5;
+}
+
+

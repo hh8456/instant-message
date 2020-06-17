@@ -1,0 +1,12 @@
+{
+	"explain1":"loginaddr 是内网地址, wslogin 需要去连接 loginaddr",
+	"loginaddr":"192.168.10.240:4001",
+	"msgservers":[
+		{
+			"explain2":"msgaddr 是外网地址, 通过 msgaddr 可以找到关联的 wsmsgaddr",
+			"msgaddr":"192.168.10.240:5001",
+			"explain3":"wsmsgaddr 是外网地址, wslogin 通过 msgaddr 查询到 wsmsgaddr 的值并下发给 web im 客户端",
+			"wsmsgaddr":"192.168.10.240:23456"
+		}
+	]
+}

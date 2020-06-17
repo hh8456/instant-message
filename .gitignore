@@ -1,0 +1,14 @@
+.idea
+go.sum
+*.swp
+login-server/login-server
+gate-server/gate-server
+pv-server/pv-server
+wscli/wscli
+wslogin/wslogin
+wsmsg/wsmsg
+/fileServerTemp/data/
+/fileServerTemp/log
+/fileServerTemp/files
+fileServerTemp/go-fastdfs
+version-server/version-server

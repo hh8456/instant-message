@@ -1,0 +1,17 @@
+// 客户端和服务端共同使用的消息结构体
+syntax = "proto3";
+
+package common;
+
+// option go_package="instant-message/common-library/proto/common";
+
+// 球衣信息
+message ClothData
+{
+    int32 ClothID         = 1;  // 球服 id
+    int32 TemplateID      = 2;  // 款式, 花纹模版 id
+    int32 NeckID          = 3;  // 衣领 id
+    int32 FontID          = 4;  // 字体 id
+    int32 NameFontID      = 5;  // 姓名字体 id
+    repeated uint32 BodyColors     = 6;  // 10 个部位的颜色
+}

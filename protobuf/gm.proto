@@ -1,0 +1,16 @@
+
+syntax = "proto3";
+
+package gmProto;
+
+message GMSetPlayerCoin
+{
+	int64 roleID = 1;
+	int32 num = 2;
+}
+
+message GMSetPlayerDiamond
+{
+	int64 roleID = 1;
+	int32 num = 2;
+}

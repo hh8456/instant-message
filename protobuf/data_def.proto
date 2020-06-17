@@ -1,0 +1,37 @@
+syntax = "proto3";
+
+package msg_struct;
+
+// 单个联系人的信息
+message Contact
+{
+	int64 accountId = 1;
+	string remarkName = 2;
+}
+
+// 联系人列表
+message ContactList
+{
+	repeated Contact contacts = 1;
+}
+
+// 黑名单列表
+message BlackList
+{
+	repeated Contact contacts = 1;
+}
+
+// 朋友圈相册封面点赞列表
+message WeiboCoverLikerList
+{
+	repeated int64 likers = 1;
+}
+
+// 对应表 account
+message AccountInfo
+{
+	int64 accountId = 1;
+	ContactList cl = 2;
+	int64 lastMsgTs = 3;
+	int64 creationTime = 4;
+}

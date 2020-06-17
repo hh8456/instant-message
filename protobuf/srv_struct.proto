@@ -1,0 +1,34 @@
+syntax = "proto3";
+
+/*import "common.proto";*/
+
+package msg_struct;
+
+
+// 玩家开始战斗数据
+message PlayerData4BattleInServer
+{
+    // 玩家基础战斗信息
+    // playerData4Battle playerBaseInfo = 1;
+    // 游戏类型, 1匹配赛, 2 排位赛, 3,4单挑房
+    // GameType gameType = 2;
+    // 玩家所处大厅id
+    int32 gameID = 3;
+    // 好友邀请赛使用
+    int64 friendID = 4;
+
+    // 杯赛使用-杯赛轮数
+    int32 cupRound = 5;
+
+    // 杯赛id（结算打日志）
+    int32 cupID = 6;
+    // 邀请赛房间id
+	int64 soloRoomID = 7;
+    // 客户端版本号
+    //common.Version clientVersion = 8;
+
+	// 球场
+	int32 FootballField 	= 9;
+	// 球型
+	int32 Ball 			= 10;
+}
